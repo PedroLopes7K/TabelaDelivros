@@ -5,30 +5,50 @@ import TabelaHead from './Components/TabelaHead'
 
 class App extends Component {
   state = {
-    livros: [
-      {
-        id: '978-85-7522-632-2',
-        titulo: 'CSS Grid Layout',
-        autor: 'Maurício Samy Silva'
-      },
-      {
-        id: '978-85-7522-677-3',
-        titulo: 'Node Essencial',
-        autor: 'Ricardo R. Lecheta'
-      },
-      {
-        id: '978-85-7522-512-7',
-        titulo: 'Aprendendo Material Design',
-        autor: 'Kyle Mew'
-      }
-    ]
+    livros: []
   }
+
+  componentDidMount() {
+    fetch('./api/livros.json')
+      .then(resposta => resposta.json())
+      .then(livros => this.setState({ livros }))
+      .catch(function (error) {
+        console.log('ERRO NA REQUISIÇÃO')
+      })
+      .finally(function () {
+        console.log('sempre retorna')
+      })
+  }
+  handleRemoverLivro = id => {
+    const livros = this.state.livros.filter(l => l.id !== id)
+    this.setState({ livros })
+  }
+  handleOrdenarCrescente = titulo => {
+    const livros = this.state.livros.sort((a, b) =>
+      a.titulo < b.titulo ? -1 : 0
+    )
+    this.setState({ livros })
+  }
+  handleOrdenarDecrescente = titulo => {
+    const livros = this.state.livros.sort((a, b) =>
+      a.titulo < b.titulo ? -1 : 0
+    )
+    livros.reverse()
+    this.setState({ livros })
+  }
+
   render() {
     return (
       <table className="tabela">
-        <TabelaHead />
-        <TabelaFoot />
-        <TabelaBody livros={this.state.livros} />
+        <TabelaHead
+          ordenarCrescente={this.handleOrdenarCrescente}
+          ordenarDecrescente={this.handleOrdenarDecrescente}
+        />
+        <TabelaFoot qdeLivros={this.state.livros.length} />
+        <TabelaBody
+          livros={this.state.livros}
+          removerLinha={this.handleRemoverLivro}
+        />
       </table>
     )
   }
